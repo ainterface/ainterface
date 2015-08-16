@@ -60,3 +60,7 @@ ok
 ```
 
 The other examples are [here](https://github.com/ainterface/ainterface/tree/master/ainterface-sample/src/main/scala/ainterface).
+
+## License
+
+Apache 2.0
