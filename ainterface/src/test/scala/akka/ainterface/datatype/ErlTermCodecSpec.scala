@@ -617,12 +617,14 @@ class ErlTermCodecSpec extends WordSpec with GeneratorDrivenPropertyChecks {
 
       "decode" in {
         forAll { (elements: List[ErlTerm], tail: ErlTerm) =>
-          val length = BitVector.fromInt(elements.size)
-          val Successful(tailBits) = ErlTermCodec.codec.encode(tail)
-          val bits = BitVector(108) ++ length ++ bitsOf(elements) ++ tailBits
-          val actual = ErlTermCodec.codec.decode(bits)
-          val expected = Successful(DecodeResult(ErlImproperList(elements, tail), BitVector.empty))
-          assert(actual === expected)
+          whenever(tail != ErlList.empty) {
+            val length = BitVector.fromInt(elements.size)
+            val Successful(tailBits) = ErlTermCodec.codec.encode(tail)
+            val bits = BitVector(108) ++ length ++ bitsOf(elements) ++ tailBits
+            val actual = ErlTermCodec.codec.decode(bits)
+            val expected = Successful(DecodeResult(ErlImproperList(elements, tail), BitVector.empty))
+            assert(actual === expected)
+          }
         }
       }
     }
