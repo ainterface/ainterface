@@ -9,6 +9,13 @@ And APIs of Ainterface are designed to integrate Akka with Erlang seamlessly.
 
 Since Ainterface is an experimental project, there is no guarantee that APIs will not be changed.
 
+## TODO
+
+* Published(non hidden) mode support
+* Short node names support
+* Non distributed mode support
+* Provides binary pattern matching for ByteString
+
 ## Example
 
 First, start an Erlang node and EPMD.
