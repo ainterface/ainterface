@@ -16,6 +16,40 @@ Since Ainterface is an experimental project, there is no guarantee that APIs wil
 * Non distributed mode support
 * Provides binary pattern matching for ByteString
 
+## Usage
+
+### Dependency
+
+You should add the following dependency.
+
+```
+libraryDependencies += "com.okumin" %% "ainterface" % "0.1"
+```
+
+### Configuration
+
+In application.conf,
+
+```
+akka {
+  ainterface {
+    # The name of root actor of ainterface-system.
+    root-name = "ainterface-system"
+
+    init {
+      # -name
+      # Makes the Erlang runtime system into a distributed node and configure the name.
+      name = "node-name-your-application"
+
+      # -setcookie
+      # Sets the magic cookie of the node to Cookie.
+      # If `setcookie` is not specified, `$HOME/.erlang.cookie` is used.
+      #setcookie = ""
+    }
+  }
+}
+```
+
 ## Example
 
 First, start an Erlang node and EPMD.
