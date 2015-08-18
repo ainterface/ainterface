@@ -11,7 +11,8 @@ object Build extends Build {
   lazy val ainterface = Project(
     id = "ainterface",
     base = file("./ainterface")
-  ).settings(buildSettings: _*).settings(
+  ).settings(buildSettings ++ Publish.projectSettings: _*).settings(
+    name := "ainterface",
     scalacOptions ++= Seq("-Ypatmat-exhaust-depth", "off"),
     libraryDependencies ++= Seq(
       Dependencies.akkaActor,
