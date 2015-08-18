@@ -2,7 +2,7 @@ package ainterface
 
 import akka.actor.{ActorSystem, Props}
 import akka.ainterface.AinterfaceSystem
-import akka.ainterface.datatype.{ErlPid, ErlAtom, ErlTuple}
+import akka.ainterface.datatype.{ErlAtom, ErlPid, ErlTuple}
 
 object Sample {
   val system = ActorSystem("ainterface-sample")
@@ -25,5 +25,5 @@ object Sample {
     pid
   }
 
-  def process(): Process = new Process(system.actorOf(Props[Process.PActor]))
+  def process(): Process = new Process(system.actorOf(Props[ProcessActor]))
 }

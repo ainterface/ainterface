@@ -43,19 +43,19 @@ private[ainterface] class LocalNode(val nodeName: NodeName,
   def registered: Iterable[ErlAtom] = registry.registered
 
   def register(name: ErlAtom, pid: ErlPid): Unit = {
-    val badarg = ErlError.badarg(
+    def badarg() = ErlError.badarg(
       ErlAtom("erlang"),
       ErlAtom("register"),
       ErlList(name, pid)
     )
     if (pid.nodeName != nodeName.asErlAtom) {
-      throw badarg
+      throw badarg()
     } else if (lookup(pid).isEmpty) {
-      throw badarg
+      throw badarg()
     } else if (name == ErlAtom("undefined")) {
-      throw badarg
+      throw badarg()
     } else if (!registry.register(name, pid)) {
-      throw badarg
+      throw badarg()
     }
   }
 
