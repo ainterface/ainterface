@@ -8,6 +8,11 @@ object Build extends Build {
     scalaVersion := "2.11.7"
   )
 
+  lazy val root = Project(
+    id = "ainterface-root",
+    base = file("./")
+  ).aggregate(ainterface)
+
   lazy val ainterface = Project(
     id = "ainterface",
     base = file("./ainterface")
