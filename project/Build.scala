@@ -33,4 +33,9 @@ object Build extends Build {
     id = "ainterface-sample",
     base = file("./ainterface-sample")
   ).settings(buildSettings: _*).dependsOn(ainterface)
+
+  lazy val ainterfaceIntegrationTest = Project(
+    id = "ainterface-integration-test",
+    base = file("./ainterface-integration-test")
+  ).settings(buildSettings: _*).dependsOn(ainterface)
 }
