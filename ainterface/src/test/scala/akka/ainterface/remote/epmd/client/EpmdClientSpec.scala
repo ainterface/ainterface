@@ -44,9 +44,9 @@ class EpmdClientSpec extends ActorSpec {
           val name = s"worker-pool-supervisor-$host"
           workerPoolSupSup.expectMsg(StartChild(client, props, name))
           expectNoMsg()
-          assert(client.stateName === PoolInitializing)
-          assert(client.stateData === Data(initializingHost = Some(host)))
-          assert(client.isStateTimerActive)
+          awaitAssert(client.stateName === PoolInitializing)
+          awaitAssert(client.stateData === Data(initializingHost = Some(host)))
+          awaitAssert(client.isStateTimerActive)
         }
       }
     }
@@ -72,7 +72,7 @@ class EpmdClientSpec extends ActorSpec {
           client ! GetPort(testActor, NodeName(alive2, host))
           client ! GetPort(testActor, NodeName(alive3, host))
           assert(client.stateName === PoolInitializing)
-          expectNoMsg()
+          expectNoMsg(shortDuration)
 
           val worker = TestProbe()
           workerPoolSupSup.send(client, ChildRef(worker.ref, None))

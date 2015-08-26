@@ -10,7 +10,6 @@ import akka.ainterface.test.ActorSpec
 import akka.ainterface.test.arbitrary.AinterfaceArbitrary.{arbNodeConfig, arbNodeName}
 import akka.testkit.{TestFSMRef, TestProbe}
 import org.scalacheck.{Arbitrary, Gen}
-import scala.concurrent.duration._
 
 class HandshakeCoordinatorSpec extends ActorSpec {
   private[this] def setup(localNodeName: NodeName = NodeName("local", "ainterface"),
@@ -99,7 +98,7 @@ class HandshakeCoordinatorSpec extends ActorSpec {
 
             // Test that the initiator is not monitored.
             system.stop(initiator.ref)
-            expectNoMsg(10.millis)
+            expectNoMsg(shortDuration)
 
             // Test that the connection is monitored.
             system.stop(connection)
