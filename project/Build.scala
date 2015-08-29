@@ -37,5 +37,10 @@ object Build extends Build {
   lazy val ainterfaceIntegrationTest = Project(
     id = "ainterface-integration-test",
     base = file("./ainterface-integration-test")
-  ).settings(buildSettings: _*).dependsOn(ainterface)
+  ).settings(buildSettings: _*).dependsOn(ainterface).settings(
+    libraryDependencies ++= Seq(
+      Dependencies.scalaCheck,
+      Dependencies.scalaTest
+    )
+  )
 }
