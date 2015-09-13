@@ -4,7 +4,7 @@ import sbt._
 object Build extends Build {
   lazy val buildSettings = Seq(
     organization := "com.okumin",
-    version      := "0.1",
+    version      := "0.2",
     scalaVersion := "2.11.7"
   )
 
@@ -37,7 +37,10 @@ object Build extends Build {
   lazy val ainterfaceIntegrationTest = Project(
     id = "ainterface-integration-test",
     base = file("./ainterface-integration-test")
-  ).settings(buildSettings: _*).dependsOn(ainterface).settings(
+  ).settings(buildSettings: _*).dependsOn(
+    ainterface,
+    ainterface % "test->test"
+  ).settings(
     libraryDependencies ++= Seq(
       Dependencies.scalaCheck,
       Dependencies.scalaTest

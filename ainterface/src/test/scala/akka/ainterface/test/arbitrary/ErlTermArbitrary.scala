@@ -99,13 +99,13 @@ trait ErlTermArbitrary extends ByteStringArbitrary with StringArbitrary {
     } yield ErlNewReference(nodeName, (id1, id2, id3), creation)
   }
 
-  private[this] def genErlFun(level: Int): Gen[ErlFun] = {
+  private[ainterface] def genErlFun(level: Int): Gen[ErlFun] = {
     Gen.oneOf(genErlNewFun(level), arbitrary[ErlExternalFun])
   }
 
   implicit lazy val arbErlFun: Arbitrary[ErlFun] = Arbitrary(genErlFun(0))
 
-  private[this] def genErlNewFun(level: Int): Gen[ErlNewFun] = {
+  private[ainterface] def genErlNewFun(level: Int): Gen[ErlNewFun] = {
     for {
       arity <- Gen.oneOf(0, 255)
       uniq <- Gen.listOfN(16, arbitrary[Byte]).map(x => ByteString(x.toArray))
@@ -145,13 +145,13 @@ trait ErlTermArbitrary extends ByteStringArbitrary with StringArbitrary {
     } yield ErlPid(nodeName.asErlAtom, id, serial, creation)
   }
 
-  private[this] def genErlTuple(level: Int): Gen[ErlTuple] = {
+  private[ainterface] def genErlTuple(level: Int): Gen[ErlTuple] = {
     Gen.listOf(genErlTerm(level)).map(ErlTuple.apply)
   }
 
   implicit lazy val arbErlTuple: Arbitrary[ErlTuple] = Arbitrary(genErlTuple(0))
 
-  private[this] def genErlMap(level: Int): Gen[ErlMap] = {
+  private[ainterface] def genErlMap(level: Int): Gen[ErlMap] = {
     val genKV = for {
       k <- genErlTerm(level)
       v <- genErlTerm(level)
@@ -161,13 +161,13 @@ trait ErlTermArbitrary extends ByteStringArbitrary with StringArbitrary {
 
   implicit lazy val arbErlMap: Arbitrary[ErlMap] = Arbitrary(genErlMap(0))
 
-  private[this] def genErlList(level: Int): Gen[ErlList] = {
+  private[ainterface] def genErlList(level: Int): Gen[ErlList] = {
     Gen.listOf(genErlTerm(level)).map(ErlList.apply)
   }
 
   implicit lazy val arbErlList: Arbitrary[ErlList] = Arbitrary(genErlList(0))
 
-  private[this] def genErlImproperList(level: Int): Gen[ErlImproperList] = {
+  private[ainterface] def genErlImproperList(level: Int): Gen[ErlImproperList] = {
     for {
       elements <- Gen.listOf(genErlTerm(level))
       tail <- genErlTerm(level)
