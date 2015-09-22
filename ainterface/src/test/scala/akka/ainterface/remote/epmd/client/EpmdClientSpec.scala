@@ -43,7 +43,7 @@ class EpmdClientSpec extends ActorSpec {
           val props = EpmdWorkerPoolSupervisor.props(host, tcpClient.ref)
           val name = s"worker-pool-supervisor-$host"
           workerPoolSupSup.expectMsg(StartChild(client, props, name))
-          expectNoMsg()
+          expectNoMsg(shortDuration)
           awaitAssert(client.stateName === PoolInitializing)
           awaitAssert(client.stateData === Data(initializingHost = Some(host)))
           awaitAssert(client.isStateTimerActive)

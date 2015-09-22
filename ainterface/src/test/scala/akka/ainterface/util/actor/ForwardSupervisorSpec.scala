@@ -28,7 +28,7 @@ class ForwardSupervisorSpec extends ActorSpec {
 
       val child = childReceiver.expectMsgType[ActorRef]
       system.stop(child)
-      expectNoMsg()
+      expectNoMsg(shortDuration)
       terminateProbe.expectMsg(child)
     }
   }

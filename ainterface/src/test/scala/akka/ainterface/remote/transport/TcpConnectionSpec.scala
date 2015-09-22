@@ -11,7 +11,6 @@ import akka.testkit.{TestFSMRef, TestProbe}
 import akka.util.ByteString
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.{Arbitrary, Gen}
-import org.scalacheck.Arbitrary.arbitrary
 import scala.concurrent.duration._
 import scodec.Codec
 import scodec.bits.ByteVector
@@ -186,7 +185,7 @@ class TcpConnectionSpec extends ActorSpec {
             connection.setState(stateData = Data(buffer = bytes))
 
             connection ! TcpConnectionProtocol.Read(keeps = false)
-            expectNoMsg()
+            expectNoMsg(shortDuration)
             assert(connection.stateName === Working)
             val handler = Handler(testActor, codec, keeps = false)
             assert(connection.stateData === Data(Some(handler), bytes))
@@ -265,7 +264,7 @@ class TcpConnectionSpec extends ActorSpec {
           watch(connection)
 
           connection ! TcpConnectionProtocol.SetTimeout(None)
-          expectNoMsg()
+          expectNoMsg(shortDuration)
         }
       }
 

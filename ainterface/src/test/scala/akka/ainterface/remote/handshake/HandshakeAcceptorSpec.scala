@@ -233,7 +233,7 @@ class HandshakeAcceptorSpec extends ActorSpec {
             connection.expectMsg(Write(HandshakeMessage(ack)))
             coordinator.expectMsg(HandshakeCoordinatorProtocol.Established(connection.ref, config))
             expectTerminated(acceptor)
-            connectionWatcher.expectNoMsg()
+            connectionWatcher.expectNoMsg(shortDuration)
           }
         }
       }

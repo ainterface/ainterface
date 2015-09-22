@@ -47,7 +47,7 @@ class DynamicSupervisorSpec extends ActorSpec {
       val child = expectMsgPF() {
         case ChildRef(ref, None) => ref
       }
-      terminateProbe.expectNoMsg()
+      terminateProbe.expectNoMsg(shortDuration)
       system.stop(child)
       terminateProbe.expectMsg(child)
     }
