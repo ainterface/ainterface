@@ -67,7 +67,7 @@ private[ainterface] final case class ErlBitStringImpl(value: ByteString,
 
   override def productPrefix: String = "ErlBitString"
 }
-private[datatype] object ErlBitStringImpl {
+private[ainterface] object ErlBitStringImpl {
   def create(value: ByteString, bits: Int): ErlBitStringImpl = {
     require(bits != 0)
     val last = value.last & (0xff << (java.lang.Byte.SIZE - bits))
@@ -172,10 +172,7 @@ final class ErlPort private (val nodeName: ErlAtom,
                              val id: Int,
                              val creation: Byte) extends ErlTerm {
   override def equals(other: Any): Boolean = other match {
-    case that: ErlPort =>
-      nodeName == that.nodeName &&
-        id == that.id &&
-        creation == that.creation
+    case that: ErlPort => nodeName == that.nodeName && id == that.id && creation == that.creation
     case _ => false
   }
 
@@ -261,4 +258,6 @@ object ErlList {
  * Represents an improper list of Erlang.
  * An improper list is a list which final tail is not [].
  */
-final case class ErlImproperList(elements: List[ErlTerm], tail: ErlTerm) extends ErlTerm
+final case class ErlImproperList(elements: List[ErlTerm], tail: ErlTerm) extends ErlTerm {
+  require(tail != ErlList.empty, "The tail of an improper list must not be nil.")
+}

@@ -44,7 +44,7 @@ trait ErlTermArbitrary extends ByteStringArbitrary with StringArbitrary {
     )
 
     level match {
-      case 1 => genScalar
+      case 2 => genScalar
       case x => Gen.frequency(50 -> genScalar, 1 -> genCollection(x + 1))
     }
   }
@@ -64,7 +64,6 @@ trait ErlTermArbitrary extends ByteStringArbitrary with StringArbitrary {
         1 -> Gen.listOfN(len, Gen.choose(Byte.MinValue, Byte.MaxValue)).map(_.toArray),
         5 -> arbReadableString.arbitrary.map(_.getBytes(StandardCharsets.ISO_8859_1))
       )
-      if characters.length <= ErlAtom.AllowableLength
     } yield ErlAtom(new String(characters, StandardCharsets.ISO_8859_1))
   }
 
@@ -79,8 +78,8 @@ trait ErlTermArbitrary extends ByteStringArbitrary with StringArbitrary {
   implicit lazy val arbErlBitStringImpl: Arbitrary[ErlBitStringImpl] = Arbitrary {
     for {
       bytes <- genNonEmptyByteString
-      pad <- Gen.choose(1, 7)
-    } yield ErlBitString(bytes, bytes.length * 8 - pad).asInstanceOf[ErlBitStringImpl]
+      bits <- Gen.choose(1, 7)
+    } yield ErlBitStringImpl.create(bytes, bits)
   }
 
   implicit lazy val arbErlBinary: Arbitrary[ErlBinary] = Arbitrary {
@@ -162,7 +161,10 @@ trait ErlTermArbitrary extends ByteStringArbitrary with StringArbitrary {
   implicit lazy val arbErlMap: Arbitrary[ErlMap] = Arbitrary(genErlMap(0))
 
   private[ainterface] def genErlList(level: Int): Gen[ErlList] = {
-    Gen.listOf(genErlTerm(level)).map(ErlList.apply)
+    Gen.frequency(
+      1 -> Gen.const(ErlList.empty),
+      10 -> Gen.listOf(genErlTerm(level)).map(ErlList.apply)
+    )
   }
 
   implicit lazy val arbErlList: Arbitrary[ErlList] = Arbitrary(genErlList(0))
@@ -171,6 +173,7 @@ trait ErlTermArbitrary extends ByteStringArbitrary with StringArbitrary {
     for {
       elements <- Gen.listOf(genErlTerm(level))
       tail <- genErlTerm(level)
+      if tail != ErlList.empty
     } yield ErlImproperList(elements, tail)
   }
 

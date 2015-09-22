@@ -142,6 +142,7 @@ class ErlTermSpec extends WordSpec with GeneratorDrivenPropertyChecks {
             val bitString = ErlBitString(value, bitLength)
             assert(bitString.value === value.take(byteLength))
             assert(bitString.bitLength === bitLength)
+            assert(bitString === ErlBinary(value.take(byteLength)))
         }
       }
 
@@ -161,13 +162,14 @@ class ErlTermSpec extends WordSpec with GeneratorDrivenPropertyChecks {
             assert(bitString.value === expectedValue)
             assert(bitString.value.length === byteLength)
             assert(bitString.bitLength === bitLength)
+            assert(bitString === ErlBinary(expectedValue))
         }
       }
 
-      "being created with the non 8 divisible bit-length shorter than that of ByteString" in {
+      "being created with the non 8 divisible bit-length shorter than or equal to that of ByteString" in {
         val gen = for {
           value <- Arbitrary.arbitrary[ByteString]
-          byteLength <- Gen.choose(1, value.length - 1)
+          byteLength <- Gen.choose(1, value.length)
           unusedBits <- Gen.choose(1, 7)
         } yield (value, byteLength, byteLength * 8 - unusedBits)
 
@@ -179,6 +181,22 @@ class ErlTermSpec extends WordSpec with GeneratorDrivenPropertyChecks {
             assert(bitString.value.last === last)
             assert(bitString.value.length === byteLength)
             assert(bitString.bitLength === bitLength)
+            assert(bitString.isInstanceOf[ErlBitStringImpl])
+        }
+      }
+
+      "being created and the last byte is padded" in {
+        forAll { bytes: ByteString =>
+          val value = bytes :+ -1.toByte
+          val length = value.size * 8
+          assert(ErlBitString(value, length).value.last === Integer.valueOf("11111111", 2).toByte)
+          assert(ErlBitString(value, length - 1).value.last === Integer.valueOf("11111110", 2).toByte)
+          assert(ErlBitString(value, length - 2).value.last === Integer.valueOf("11111100", 2).toByte)
+          assert(ErlBitString(value, length - 3).value.last === Integer.valueOf("11111000", 2).toByte)
+          assert(ErlBitString(value, length - 4).value.last === Integer.valueOf("11110000", 2).toByte)
+          assert(ErlBitString(value, length - 5).value.last === Integer.valueOf("11100000", 2).toByte)
+          assert(ErlBitString(value, length - 6).value.last === Integer.valueOf("11000000", 2).toByte)
+          assert(ErlBitString(value, length - 7).value.last === Integer.valueOf("10000000", 2).toByte)
         }
       }
 
@@ -199,6 +217,7 @@ class ErlTermSpec extends WordSpec with GeneratorDrivenPropertyChecks {
             assert(bitString.value === expectedValue)
             assert(bitString.value.length === byteLength)
             assert(bitString.bitLength === bitLength)
+            assert(bitString.isInstanceOf[ErlBitStringImpl])
         }
       }
     }
@@ -339,6 +358,23 @@ class ErlTermSpec extends WordSpec with GeneratorDrivenPropertyChecks {
     "be serializable" in {
       pendingUntilFixed {
         testToSerialize[ErlList]()
+      }
+    }
+  }
+
+  "ErlImproperList" should {
+    "be serializable" in {
+      pendingUntilFixed {
+        testToSerialize[ErlImproperList]()
+      }
+    }
+
+    "not have nil as the tail" in {
+      forAll { terms: List[ErlTerm] =>
+        intercept[IllegalArgumentException] {
+          ErlImproperList(terms, ErlList(List()))
+        }
+        ()
       }
     }
   }
