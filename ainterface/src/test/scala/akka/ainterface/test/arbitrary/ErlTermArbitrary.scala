@@ -71,7 +71,7 @@ trait ErlTermArbitrary extends ByteStringArbitrary with StringArbitrary {
   implicit lazy val arbErlBitString: Arbitrary[ErlBitString] = Arbitrary {
     val randomGen = for {
       bytes <- arbitrary[ByteString]
-      bitLength <- Gen.choose(0, bytes.length)
+      bitLength <- Gen.choose(0, bytes.length * 8)
     } yield ErlBitString(bytes, bitLength)
     Gen.oneOf(randomGen, arbErlBitStringImpl.arbitrary, arbErlBinary.arbitrary)
   }
@@ -79,8 +79,8 @@ trait ErlTermArbitrary extends ByteStringArbitrary with StringArbitrary {
   implicit lazy val arbErlBitStringImpl: Arbitrary[ErlBitStringImpl] = Arbitrary {
     for {
       bytes <- genNonEmptyByteString
-      bits <- Gen.choose(1, 7)
-    } yield ErlBitStringImpl(bytes, bytes.length * 8 - bits)
+      pad <- Gen.choose(1, 7)
+    } yield ErlBitString(bytes, bytes.length * 8 - pad).asInstanceOf[ErlBitStringImpl]
   }
 
   implicit lazy val arbErlBinary: Arbitrary[ErlBinary] = Arbitrary {

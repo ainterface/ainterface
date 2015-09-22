@@ -197,7 +197,8 @@ class ErlTermCodecSpec extends WordSpec with GeneratorDrivenPropertyChecks {
         forAll { bitString: ErlBitStringImpl =>
           val actual = ErlTermCodec.codec.encode(bitString)
           val len = BitVector.fromInt(bitString.value.length)
-          val header = BitVector(77) ++ len ++ BitVector.fromInt(bitString.bitLength % 8, size = 8)
+          val bits = ErlBitString.bitsOf(bitString.bitLength)
+          val header = BitVector(77) ++ len ++ BitVector.fromByte(bits)
           val expected = Successful(header ++ BitVector(bitString.value))
           assert(actual === expected)
         }
@@ -214,7 +215,7 @@ class ErlTermCodecSpec extends WordSpec with GeneratorDrivenPropertyChecks {
             val len = BitVector.fromInt(bytes.length)
             val header = BitVector(77) ++ len ++ BitVector.fromInt(bits, size = 8)
             val actual = ErlTermCodec.codec.decode(header ++ BitVector(bytes))
-            val term = ErlBitStringImpl(ByteString(bytes), (bytes.length - 1) * 8 + bits)
+            val term = ErlBitStringImpl.create(ByteString(bytes), bits)
             val expected = Successful(DecodeResult(term, BitVector.empty))
             assert(actual === expected)
         }

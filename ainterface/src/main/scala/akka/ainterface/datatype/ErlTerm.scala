@@ -62,8 +62,18 @@ sealed abstract class ErlBitString extends ErlTerm {
   def bitLength: Int
 }
 private[ainterface] final case class ErlBitStringImpl(value: ByteString,
-                                                  bitLength: Int) extends ErlBitString {
+                                                      bitLength: Int) extends ErlBitString {
+  assert(bitLength % java.lang.Byte.SIZE != 0)
+
   override def productPrefix: String = "ErlBitString"
+}
+private[datatype] object ErlBitStringImpl {
+  def create(value: ByteString, bits: Int): ErlBitStringImpl = {
+    require(bits != 0)
+    val last = value.last & (0xff << (java.lang.Byte.SIZE - bits))
+    val bitLength = (value.length - 1) * java.lang.Byte.SIZE + bits
+    ErlBitStringImpl(value.init :+ last.toByte, bitLength)
+  }
 }
 /**
  * Represents a binary value of Erlang.
@@ -74,6 +84,8 @@ final case class ErlBinary(value: ByteString) extends ErlBitString {
 }
 
 object ErlBitString {
+  private[ainterface] def bitsOf(bitLength: Int): Byte = (bitLength % java.lang.Byte.SIZE).toByte
+
   /**
    * Creates an ErlBitString from the ByteString.
    * @param value binary data
@@ -90,6 +102,8 @@ object ErlBitString {
    * If the specified `value` is longer, the sliced `value` will be the value of ErlBitString.
    * If the specified `value` is shorter, the `value` will be extended by zero padding on the right.
    *
+   * if `bitLength` is not divisible by 8, unused bits of the last byte are always 0.
+   *
    * @param value binary data
    * @param bitLength bit length
    */
@@ -97,16 +111,17 @@ object ErlBitString {
     require(bitLength >= 0, "bitLength should be greater than or equal to 0.")
 
     val isBinary = bitLength % java.lang.Byte.SIZE == 0
-    val byteLength = bitLength / java.lang.Byte.SIZE + (if (isBinary) 0 else 1)
+    val byteLength = (bitLength + java.lang.Byte.SIZE - 1) / java.lang.Byte.SIZE
 
     value.length match {
       case x if isBinary && x == byteLength => ErlBinary(value)
       case x if isBinary && x < byteLength =>
         ErlBinary(value ++ ByteString(Array.fill[Byte](byteLength - x)(0)))
       case x if isBinary && x > byteLength => ErlBinary(value.take(byteLength))
-      case x if !isBinary && x <= byteLength =>
+      case x if !isBinary && x < byteLength =>
         ErlBitStringImpl(value ++ ByteString(Array.fill[Byte](byteLength - x)(0)), bitLength)
-      case x if !isBinary && x > byteLength => ErlBitStringImpl(value.take(byteLength), bitLength)
+      case x if !isBinary && x >= byteLength =>
+        ErlBitStringImpl.create(value.take(byteLength), bitsOf(bitLength))
     }
   }
 }
@@ -117,8 +132,8 @@ object ErlBitString {
  */
 sealed abstract class ErlReference extends ErlTerm
 private[ainterface] final case class ErlNewReference(nodeName: ErlAtom,
-                                                 id: (Int, Int, Int),
-                                                 creation: Byte) extends ErlReference {
+                                                     id: (Int, Int, Int),
+                                                     creation: Byte) extends ErlReference {
   override def productPrefix: String = "ErlReference"
 }
 
@@ -134,21 +149,21 @@ sealed abstract class ErlFun extends ErlTerm
  * An internal function.
  */
 private[ainterface] final case class ErlNewFun(arity: Int,
-                                           uniq: ByteString,
-                                           index: Int,
-                                           module: ErlAtom,
-                                           oldIndex: Int,
-                                           oldUniq: Int,
-                                           pid: ErlPid,
-                                           freeVars: List[ErlTerm]) extends ErlFun {
+                                               uniq: ByteString,
+                                               index: Int,
+                                               module: ErlAtom,
+                                               oldIndex: Int,
+                                               oldUniq: Int,
+                                               pid: ErlPid,
+                                               freeVars: List[ErlTerm]) extends ErlFun {
   override def productPrefix: String = "ErlInternalFun"
 }
 /**
  * An external function, defined by "fun Module:Name/Arity".
  */
 private[ainterface] final case class ErlExternalFun(module: ErlAtom,
-                                                function: ErlAtom,
-                                                arity: Int) extends ErlFun
+                                                    function: ErlAtom,
+                                                    arity: Int) extends ErlFun
 
 /**
  * Represents a port identifier of Erlang.

@@ -7,7 +7,7 @@ import scodec.Attempt.{failure, successful}
 import scodec.bits.{BitVector, ByteVector}
 import scodec.codecs._
 import scodec.{Codec, DecodeResult, Err}
-import shapeless.{HNil, ::}
+import shapeless.{::, HNil}
 
 /**
  * Defines external term formats for ErlTerms.
@@ -88,12 +88,10 @@ private[ainterface] object ErlTermCodec {
     val sizeWithBits: Codec[Int] = _uint32.xmap[Int](x => x + 1, x => x - 1)
     constant(77).dropLeft(variableSizeBytes(sizeWithBits, int8 :: byteString)).xmap[ErlBitStringImpl](
       {
-        case bits :: data :: HNil =>
-          ErlBitStringImpl(data, (data.size - 1) * java.lang.Byte.SIZE + bits)
+        case bits :: data :: HNil => ErlBitStringImpl.create(data, bits)
       },
       {
-        case ErlBitStringImpl(data, bitLength) =>
-          (bitLength - (data.size - 1) * java.lang.Byte.SIZE) :: data :: HNil
+        bits: ErlBitStringImpl => ErlBitString.bitsOf(bits.bitLength) :: bits.value :: HNil
       }
     )
   }

@@ -174,7 +174,9 @@ class ErlTermSpec extends WordSpec with GeneratorDrivenPropertyChecks {
         forAll(gen) {
           case (value, byteLength, bitLength) =>
             val bitString = ErlBitString(value, bitLength)
-            assert(bitString.value === value.take(byteLength))
+            assert(bitString.value.init === value.take(byteLength).init)
+            val last = (value.take(byteLength).last & (0xff << (8 - (bitLength % 8)))).toByte
+            assert(bitString.value.last === last)
             assert(bitString.value.length === byteLength)
             assert(bitString.bitLength === bitLength)
         }
