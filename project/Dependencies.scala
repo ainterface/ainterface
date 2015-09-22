@@ -2,7 +2,7 @@ import sbt._
 
 object Dependencies {
 
-  val akkaVersion = "2.3.12"
+  val akkaVersion = "2.3.14"
 
   val akkaActor    = "com.typesafe.akka" %% "akka-actor"                     % akkaVersion
   val scodec       = "org.scodec"        %% "scodec-core"                    % "1.8.1"
