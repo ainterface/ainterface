@@ -100,12 +100,14 @@ class ErlTermStringContextSpec extends WordSpec {
 
     "fail parsing" when {
       "illegal literal is passed" in {
+        assertDoesNotCompile("""erl""""")
         assertDoesNotCompile("""erl"Atom"""")
         assertDoesNotCompile("""erl"0atom"""")
         assertDoesNotCompile("""erl"_atom"""")
         assertDoesNotCompile("""erl"@atom"""")
         assertDoesNotCompile("""erl"atom~"""")
         assertDoesNotCompile("""erl"{[1, 2}]"""")
+        assertDoesNotCompile("""erl"1 2 3"""")
       }
     }
   }

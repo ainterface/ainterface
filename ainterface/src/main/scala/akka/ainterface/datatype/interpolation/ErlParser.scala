@@ -4,7 +4,7 @@ import akka.ainterface.datatype.ErlAtom
 import scala.util.parsing.combinator.RegexParsers
 
 private[interpolation] object ErlParser extends RegexParsers {
-  val PlaceHolder = "???"
+  val Placeholder = "???"
 
   private[this] val integer: Parser[EInteger] = """-?[0-9]+""".r ^^ { x => EInteger(BigInt(x)) }
   private[this] val float: Parser[EFloat] = """-?[0-9]+\.[0-9]+""".r ^^ { x =>
@@ -20,7 +20,9 @@ private[interpolation] object ErlParser extends RegexParsers {
   private[this] val tuple: Parser[ETuple] = "{" ~> repsep(term, ",") <~ "}" ^^ ETuple
   private[this] val list: Parser[EList] = "[" ~> repsep(term, ",") <~ "]" ^^ EList
 
-  private[this] val variable: Parser[EVariable.type] = PlaceHolder ^^^ EVariable
+  private[this] val variable: Parser[EVariable.type] = {
+    (Placeholder ^^^ EVariable).withFailureMessage("Failed parsing as an erlang term.")
+  }
 
   private[this] lazy val term: Parser[ETerm] = tuple | list | float | integer | atom | variable
 

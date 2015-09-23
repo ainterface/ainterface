@@ -24,7 +24,7 @@ private[interpolation] object ErlTermInterpolationMacro {
       case Apply(_, List(Apply(_, erlTrees))) if erlTrees.size == args.size +1 =>
         val erl = erlTrees.map {
           case Literal(Constant(x: String)) => x
-        }.mkString(ErlParser.PlaceHolder)
+        }.mkString(ErlParser.Placeholder)
 
         ErlParser(erl) match {
           case Right(term) => c.Expr[ErlTerm](lift(term, args.iterator.map(_.tree)))
