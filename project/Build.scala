@@ -21,6 +21,8 @@ object Build extends Build {
     scalacOptions ++= Seq("-Ypatmat-exhaust-depth", "off"),
     libraryDependencies ++= Seq(
       Dependencies.akkaActor,
+      Dependencies.parserCombinators,
+      Dependencies.scalaReflect(scalaVersion.value),
       Dependencies.scodec,
       Dependencies.akkaTestKit,
       Dependencies.scalaCheck,
