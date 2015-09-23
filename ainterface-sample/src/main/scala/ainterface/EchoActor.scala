@@ -2,12 +2,13 @@ package ainterface
 
 import akka.actor.ActorLogging
 import akka.ainterface.ErlProcessActor
+import akka.ainterface.datatype.interpolation.atom
 import akka.ainterface.datatype.{ErlAtom, ErlPid, ErlTuple}
 
 class EchoActor extends ErlProcessActor with ActorLogging {
   override def preStart(): Unit = {
     log.debug("EchoActor starts. pid = {}", process.self)
-    process.register(ErlAtom("echo"), process.self)
+    process.register(atom"echo", process.self)
   }
 
   override def receive: Receive = {

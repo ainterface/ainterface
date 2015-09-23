@@ -2,12 +2,13 @@ package ainterface
 
 import akka.actor.ActorLogging
 import akka.ainterface.ErlProcessActor
+import akka.ainterface.datatype.interpolation.atom
 import akka.ainterface.datatype.{ErlAtom, ErlPid, ErlTuple}
 
 class ExitActor extends SampleActor with ErlProcessActor with ActorLogging {
   override def preStart(): Unit = {
     log.debug("ExitActor starts. pid = {}", process.self)
-    process.register(ErlAtom("exit"), process.self)
+    process.register(atom"exit", process.self)
   }
 
   override def receive: Receive = {

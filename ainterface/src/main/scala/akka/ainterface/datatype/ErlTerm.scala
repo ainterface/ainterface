@@ -51,6 +51,7 @@ final case class ErlAtom(value: String) extends ErlTerm {
 }
 
 object ErlAtom {
+  ErlAtom.apply("")
   private[ainterface] val AllowableLength = 255
 }
 

@@ -31,5 +31,19 @@ package object interpolation {
    *   erl"{ok, $pid}" // ErlTuple(ErlAtom("ok"), pid)
    * }}}
    */
-  implicit def term(context: StringContext): ErlTermStringContext = new ErlTermStringContext(context)
+  implicit def erl(context: StringContext): ErlTermStringContext = new ErlTermStringContext(context)
+
+  /**
+   * Provides a helper method to create [[ErlAtom]] instance.
+   *
+   * {{{
+   *   import akka.ainterface.datatype.interpolation._
+   *
+   *   atom"" // ErlAtom("")
+   *   atom"mofu" // ErlAtom("mofu")
+   *   atom"MOFU" // ErlAtom("MOFU"), need no single quote
+   *   atom"'MOFU'" // ErlAtom("'MOFU'")
+   * }}}
+   */
+  implicit def atom(context: StringContext): ErlAtomStringContext = new ErlAtomStringContext(context)
 }

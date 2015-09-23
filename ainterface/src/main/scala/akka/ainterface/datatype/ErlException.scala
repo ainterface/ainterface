@@ -1,5 +1,7 @@
 package akka.ainterface.datatype
 
+import akka.ainterface.datatype.interpolation.atom
+
 /**
  * An erlang exception.
  */
@@ -15,7 +17,7 @@ final case class ErlError private (reason: ErlTerm,
   extends ErlException(s"** exception error: $reason") {
 
   def asTuple: ErlTuple = ErlTuple(
-    ErlAtom("EXIT"),
+    atom"EXIT",
     ErlTuple(
       reason,
       ErlList(
@@ -46,7 +48,7 @@ object ErlError {
   }
 
   def badarg(module: ErlAtom, function: ErlAtom, args: ErlList): ErlError = {
-    ErlError(ErlAtom("badarg"), module, function, args)
+    ErlError(atom"badarg", module, function, args)
   }
 }
 
@@ -54,16 +56,16 @@ object ErlError {
  * An error by erlang:exit.
  */
 final case class ErlExit(reason: ErlTerm) extends ErlException(s"** exception exit: $reason") {
-  def asTuple: ErlTuple = ErlTuple(ErlAtom("EXIT"), reason)
+  def asTuple: ErlTuple = ErlTuple(atom"EXIT", reason)
 }
 
 object ErlExit {
-  val Normal: ErlAtom = ErlAtom("normal")
-  val Kill: ErlAtom = ErlAtom("kill")
-  val Killed: ErlAtom = ErlAtom("killed")
+  val Normal: ErlAtom = atom"normal"
+  val Kill: ErlAtom = atom"kill"
+  val Killed: ErlAtom = atom"killed"
 
-  val Noproc: ErlAtom = ErlAtom("noproc")
-  val Noconnection: ErlAtom = ErlAtom("noconnection")
+  val Noproc: ErlAtom = atom"noproc"
+  val Noconnection: ErlAtom = atom"noconnection"
 
   val KilledExit: ErlExit = ErlExit(Killed)
 }

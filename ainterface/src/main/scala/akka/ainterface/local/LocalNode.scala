@@ -1,6 +1,7 @@
 package akka.ainterface.local
 
 import akka.actor.ActorRef
+import akka.ainterface.datatype.interpolation.atom
 import akka.ainterface.datatype.{ErlAtom, ErlError, ErlList, ErlPid, ErlReference}
 import akka.ainterface.{ControlMessage, NodeName, Target}
 import java.util.concurrent.CountDownLatch
@@ -44,15 +45,15 @@ private[ainterface] class LocalNode(val nodeName: NodeName,
 
   def register(name: ErlAtom, pid: ErlPid): Unit = {
     def badarg() = ErlError.badarg(
-      ErlAtom("erlang"),
-      ErlAtom("register"),
+      atom"erlang",
+      atom"register",
       ErlList(name, pid)
     )
     if (pid.nodeName != nodeName.asErlAtom) {
       throw badarg()
     } else if (lookup(pid).isEmpty) {
       throw badarg()
-    } else if (name == ErlAtom("undefined")) {
+    } else if (name == atom"undefined") {
       throw badarg()
     } else if (!registry.register(name, pid)) {
       throw badarg()
@@ -62,9 +63,9 @@ private[ainterface] class LocalNode(val nodeName: NodeName,
   def unregister(name: ErlAtom): Unit = {
     if (!registry.unregister(name)) {
       throw ErlError(
-        ErlAtom("erlang"),
-        ErlAtom("unregister"),
-        ErlAtom("badarg"),
+        atom"erlang",
+        atom"unregister",
+        atom"badarg",
         ErlList(name)
       )
     }

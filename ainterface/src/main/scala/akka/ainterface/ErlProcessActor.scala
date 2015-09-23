@@ -1,7 +1,8 @@
 package akka.ainterface
 
 import akka.actor.{Actor, ActorContext}
-import akka.ainterface.datatype.{ErlAtom, ErlExit, ErlReference, ErlTerm, ErlTuple}
+import akka.ainterface.datatype.interpolation.atom
+import akka.ainterface.datatype.{ErlExit, ErlReference, ErlTerm, ErlTuple}
 import akka.ainterface.remote.RemoteNodeStatusEventBus.NodeDown
 
 trait ErlProcessActor extends Actor { actor =>
@@ -83,6 +84,6 @@ trait ErlProcessActor extends Actor { actor =>
       case Target.Pid(pid) => pid
       case Target.Name(name, node) => ErlTuple(name, node.asErlAtom)
     }
-    ErlTuple(ErlAtom("DOWN"), ref, ErlAtom("process"), obj, reason)
+    ErlTuple(atom"DOWN", ref, atom"process", obj, reason)
   }
 }

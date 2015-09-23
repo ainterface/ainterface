@@ -1,6 +1,7 @@
 package akka.ainterface.remote
 
 import akka.ainterface.datatype._
+import akka.ainterface.datatype.interpolation._
 import akka.ainterface.test.arbitrary.AinterfaceArbitrary._
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.{Arbitrary, Gen}
@@ -30,7 +31,7 @@ class SendSpec extends BaseSpec {
   "ErlTermCodec" should {
     "encode/decode round-trip" in {
       forAll { term: ErlTerm =>
-        process.send(ErlAtom("echo"), ErlAtom("erltest@okumin-mini.local"), ErlTuple(process.self, ErlAtom("mofu")))
+        process.send(atom"echo", atom"erltest@okumin-mini.local", erl"{${process.self}, mofu}")
         val echo = process.receive() match {
           case ErlTuple(from: ErlPid, _) => from
         }

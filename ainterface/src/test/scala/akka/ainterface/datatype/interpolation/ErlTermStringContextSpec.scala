@@ -109,4 +109,15 @@ class ErlTermStringContextSpec extends WordSpec {
       }
     }
   }
+
+  "atom" should {
+    "parse an atom" in {
+      assert(atom"" === ErlAtom(""))
+      assert(atom"mofu" === ErlAtom("mofu"))
+      assert(atom"mofu_Mofu@334" === ErlAtom("mofu_Mofu@334"))
+      assert(atom"MOFU~MOFU" === ErlAtom("MOFU~MOFU"))
+      assert(atom"'mofu'" === ErlAtom("'mofu'"))
+      assert(atom"???" === ErlAtom("???"))
+    }
+  }
 }
