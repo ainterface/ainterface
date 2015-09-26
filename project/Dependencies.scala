@@ -11,6 +11,7 @@ object Dependencies {
 
   val akkaTestKit  = "com.typesafe.akka" %% "akka-testkit"                   % akkaVersion % "test"
   val scalaCheck   = "org.scalacheck"    %% "scalacheck"                     % "1.12.4"    % "test"
+  val scalaMeter   = "com.storm-enroute" %% "scalameter"                     % "0.7"       % "test"
   val scalaTest    = "org.scalatest"     %% "scalatest"                      % "2.2.5"     % "test"
   val mockito      = "org.mockito"       %  "mockito-core"                   % "1.10.19"   % "test"
 }

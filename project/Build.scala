@@ -48,4 +48,20 @@ object Build extends Build {
       Dependencies.scalaTest
     )
   )
+
+  lazy val ainterfacePerformance = Project(
+    id = "ainterface-performance",
+    base = file("./ainterface-performance")
+  ).settings(buildSettings: _*).dependsOn(
+    ainterface,
+    ainterface % "test->test"
+  ).settings(
+    resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+    testFrameworks += new TestFramework("org.scalameter.ScalaMeterFramework"),
+    parallelExecution in Test := false,
+    libraryDependencies ++= Seq(
+      Dependencies.scalaCheck,
+      Dependencies.scalaMeter
+    )
+  )
 }
